@@ -1,0 +1,38 @@
+[
+     {
+          "id": 1,
+          "title": "Guitarra Gibson",
+          "description": "Guitarra de 5 cuerdas",
+          "price": 1500,
+          "thumbnail": "./rutadeimagen1",
+          "code": 3,
+          "stock": 3
+     },
+     {
+          "id": 2,
+          "title": "Guitarra Fender",
+          "description": "Instrumento de 6 cuerdas Fender",
+          "price": 2500,
+          "thumbnail": "./rutadeimagen2",
+          "code": 4,
+          "stock": 4
+     },
+     {
+          "id": 3,
+          "title": "Bajo Fender",
+          "description": "Instrumento de 4 cuerdas Fender",
+          "price": 1200,
+          "thumbnail": "./rutadeimagen3",
+          "code": 5,
+          "stock": 6
+     },
+     {
+          "id": 5,
+          "title": "Bateria VH",
+          "description": "Instrumento de percusión Van Halen",
+          "price": 4000,
+          "thumbnail": "./rutadeimagen5",
+          "code": 7,
+          "stock": 2
+     }
+]

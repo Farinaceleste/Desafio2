@@ -2,8 +2,9 @@
   "name": "desafio2",
   "version": "1.0.0",
   "description": "��#\u0000 \u0000D\u0000e\u0000s\u0000a\u0000f\u0000i\u0000o\u00002\u0000\r\u0000 \u0000",
-  "main": "ProductManager.js",
+  "main": "app.js",
   "scripts": {
+   
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

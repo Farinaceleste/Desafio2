@@ -1,46 +1,50 @@
-const {getDatos, saveDatos} = require ("../saveAndGet.js")
-
-
+const { getDatos, saveDatos } = require("../saveAndGet")
+const ProductManager = require("./ProductManager")
 
 class CartManager {
-    constructor (ruta) {
-        this.ruta = ruta 
-        
+    constructor(ruta) {
+        this.ruta = ruta
+
     }
 
-    getCart() {
+    getCarts() {
         return getDatos(this.ruta)
     }
 
-    newCart (product) {
-
-        let products = this.getCart()
-        console.log(products)
-
-        let id = 1
-        if (products.length>0) {
-            id = Math.max(...products.map(p => p.id)) + 1
-            
-        }
+    newCart(product) {
+        let carts = this.getCarts()
+        let id = this.getCartId()
 
         let nuevoCart = {
-            id, ...product
-        }
+            id: id.toString(),
+            products: product || []
+        };
 
-        products.push (nuevoCart)
-        saveDatos(this.ruta, products)
+        carts.push(nuevoCart)
+        this.saveCarts(carts)
 
         return nuevoCart
     }
 
-    saveCart(carts) {
+    saveCarts(carts) {
         saveDatos(this.ruta, carts)
-
     }
 
+    getProducts() {
+        const productManager = new ProductManager(path.join(__dirname, '..', 'data', 'products.JSON'))
+        return productManager.getProducts()
+    }
 
-
-
+    getCartId() {
+        const carts = this.getCarts()
+        if (carts.length === 0) {
+            return 1;
+        } else {
+            const maxId = Math.max(...carts.map(cart => parseInt(cart.id)))
+            return maxId + 1
+        }
+    }
 }
+
 
 module.exports = CartManager

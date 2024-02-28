@@ -25,5 +25,15 @@
           "thumbnail": "rutadeimagen5",
           "code": 7,
           "stock": 2
+     },
+     {
+          "id": 1,
+          "title": "Producto1",
+          "description": "Es muy bueno",
+          "code": "2",
+          "price": 2500,
+          "status": true,
+          "stock": 3,
+          "category": "cualquiera"
      }
 ]

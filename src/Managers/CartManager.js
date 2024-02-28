@@ -5,13 +5,14 @@ const {getDatos, saveDatos} = require ("../saveAndGet.js")
 class CartManager {
     constructor (ruta) {
         this.ruta = ruta 
+        
     }
 
     getCart() {
         return getDatos(this.ruta)
     }
 
-    createCart (product) {
+    newCart (product) {
 
         let products = this.getCart()
         console.log(products)
@@ -19,6 +20,7 @@ class CartManager {
         let id = 1
         if (products.length>0) {
             id = Math.max(...products.map(p => p.id)) + 1
+            
         }
 
         let nuevoCart = {
@@ -30,6 +32,13 @@ class CartManager {
 
         return nuevoCart
     }
+
+    saveCart(carts) {
+        saveDatos(this.ruta, carts)
+
+    }
+
+
 
 
 }

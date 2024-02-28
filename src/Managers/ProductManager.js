@@ -5,22 +5,24 @@ class ProductManager {
 
     constructor(ruta) {
         this.ruta = ruta
-        
+
     }
 
     getProducts() {
         return getDatos(this.ruta)
+
+        
     }
 
-    getProductsById(req, res, id) {
+    getProductsById(id) {
         let products = this.getProducts()
-    
+
         let index = products.findIndex(p => p.id === id)
-    
+
         if (index === -1) {
-            res.status(404).send("No se encontró el producto con id " + id)
+            return null;
         } else {
-            res.status(200).send(products[index])
+            return (products[index])
         }
     }
 
@@ -32,38 +34,33 @@ class ProductManager {
             id = Math.max(...products.map((p) => p.id)) + 1
         }
 
-        let nuevoCart = {
+        let nuevoProducto = {
             id,
-            ...products,
+            ...product
         };
 
-        products.push(nuevoCart)
+        products.push(nuevoProducto)
         saveDatos(this.ruta, products)
 
-        return nuevoCart
+        return nuevoProducto
     }
 
     updateProduct(id, updatedFields) {
-        const productIndex = this.products.findIndex((product) => product.id === id);
+        if (typeof id !== 'number') {
+          return { error: "El id debe ser numérico" }
+        }
+      
+        const productIndex = this.products.findIndex((product) => product.id === id)
         if (productIndex !== -1) {
-          this.products[productIndex] = { ...this.products[productIndex], ...updatedFields };
-          this.saveProductsToFile();
-          console.log("Producto actualizado");
+          this.products[productIndex] = { ...this.products[productIndex], ...updatedFields }
+          this.saveDatos(this.ruta, this.products)
+          console.log("Producto actualizado")
         } else {
-          console.log("Producto no encontrado");
+          console.log("Producto no encontrado")
         }
       }
 
 
-    async deleteProduct(req, res) {
-        try {
-          const pid = parseInt(req.params.pid)
-          await ProductManager.deleteProduct(pid)
-          res.status(200).send("Producto eliminado correctamente")
-        } catch (error) {
-          res.status(500).send(error.message)
-        }
-      }
 
 }
 

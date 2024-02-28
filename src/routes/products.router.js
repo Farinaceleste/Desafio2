@@ -1,30 +1,30 @@
-const  ProductManager  = require ("../Managers/ProductManager.js")
-const {join} = require("path")
-const Router=require('express').Router
-const router=Router()
+const ProductManager = require("../Managers/ProductManager.js")
+const { join } = require("path")
+const { saveDatos } = require("../saveAndGet.js")
+const Router = require('express').Router
+const router = Router()
 
 
+let rutaProducts = join(__dirname, "..", "data", "products.JSON")
+const productManager = new ProductManager(rutaProducts)
 
-let rutaProducts = join (__dirname, "data", "products.JSON")
-const productManager = new ProductManager (rutaProducts)
 
+router.get('/', (req, res) => {
+    let products = productManager.getProducts()
 
-router.get('/',  (req, res) => {
-   let products = productManager.getProducts()
+    let { limit, skip } = req.query
 
-   let { limit, skip } = req.query
+    let resultado = products
+    if (skip && skip > 0) {
+        resultado = resultado.slice(skip)
+    }
 
-   let resultado = products
-   if (skip && skip > 0) {
-       resultado = resultado.slice(skip)
-   }
+    if (limit && limit > 0) {
+        resultado = resultado.slice(0, limit)
+    }
 
-   if (limit && limit > 0) {
-       resultado = resultado.slice(0, limit)
-   }
-
-   res.setHeader( 'Content-Type','application/json')
-   res.status(200).json({products})
+    res.setHeader('Content-Type', 'application/json')
+    res.status(200).json({ products })
 })
 
 
@@ -36,7 +36,7 @@ router.get("/:pid", (req, res) => {
         if (isNaN(pid)) {
             return res.status(400).json({ error: "El id debe ser numérico" })
         }
-        const product = productManager.getProductsById(res, pid)
+        const product = productManager.getProductsById(pid)
         if (!product) {
             return res.status(404).json({ error: `No existe producto con id ${pid}` })
         }
@@ -49,58 +49,79 @@ router.get("/:pid", (req, res) => {
 
 router.post("/", (req, res) => {
     try {
-        const { title, description, price, thumbnail, code, stock, status } = req.body
-        if (!title || !description || !price || !thumbnail || !code || !stock || !status) {
-            return res.status(400).json({ error: "Todos los campos son obligatorios" })
+        if (!req.body.title || !req.body.description || !req.body.price || !req.body.code || !req.body.stock || !req.body.status) {
+            return res.status(400).json({
+                error: "Complete el campo faltante"
+            });
         }
-        const product = productManager.addProduct(req.body)
+
+        console.log(req.body)
+
+        let nuevoProducto = {
+            id: 1, 
+            ...req.body
+        }
+
+        let newProduct = productManager.addProduct(nuevoProducto)
+
         res.setHeader("Content-Type", "application/json")
-        return res.status(201).json({ product })
+        return res.status(201).json({ newProduct })
+
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
 })
 
 router.put("/:pid", (req, res) => {
-    try {
-        const pid = parseInt(req.params.pid)
-        if (isNaN(pid)) {
-            return res.status(400).json({ error: "El id debe ser numérico" })
-        }
-        const { title, description, price, code, stock, status } = req.body
-        if (!title || !description || !price || !code || !stock || !status) {
-            return res.status(400).json({ error: "Todos los campos son obligatorios" })
-        }
-        const product = productManager.updateProduct(pid, req.body)
-        if (!product) {
-            return res.status(404).json({ error: `No existe producto con id ${pid}` })
-        }
-        res.setHeader("Content-Type", "application/json")
-        return res.status(200).json({ product })
-    } catch (error) {
-        res.status(500).json({ error: error.message })
+    const pid = parseInt(req.params.pid)
+    if (isNaN(pid)) {
+      return res.status(400).json({ error: "El id debe ser numérico" })
     }
-})
-
-router.delete("/:pid", (req, res) => {
-    try {
-        const pid = parseInt(req.params.pid)
-        if (isNaN(pid)) {
-            return res.status(400).json({ error: "El id debe ser numérico" })
-        }
-        const product = productManager.deleteProduct(pid)
-        if (!product) {
-            return res.status(404).json({ error: `No existe producto con id ${pid}` })
-        }
-        res.setHeader("Content-Type", "application/json")
-        return res .status(200).json({ message: "Se eliminó correctamente el producto."})
-
+  
+    let products = productManager.getProducts()
+  
+    let productIndex = products.findIndex(u => u.id === pid);
+    if (productIndex === -1) {
+      return res.status(400).json({ error: `No existen productos con id ${pid}` });
     }
-    catch(error){
-        console.log('Error al borrar el producto', error)
+  
+    products[productIndex] = {
+      ...products[productIndex],
+      ...req.body,
+      id: pid
     }
-});
+  
+    productManager.saveDatos(this.ruta, products)
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(200).json({ productoModificado: products[productIndex] });
+  })
+
+router.delete("/:id", (req, res) => {
+    const id = Number(req.params.id)
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "El id debe ser numérico" })
+    }
+  
+    const products = productManager.getProducts()
+    const productIndex = products.findIndex(p => p.id === id)
+  
+    if (productIndex === -1) {
+      return res.status(404).send(`No existen productos con id ${id}`) 
+    }
+  
+    const productoEliminado = products[productIndex]
+    products.splice(productIndex, 1)
+  
+    saveDatos(rutaProducts, products)
+
+    console.log(products)
+    console.log(rutaProducts)
+
+    res.setHeader("Content-Type", "application/json")
+    return res.status(200).json({ productoEliminado })
+
+    
+  })
 
 
-
-module.exports=router
+module.exports = router

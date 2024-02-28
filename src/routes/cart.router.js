@@ -4,13 +4,13 @@ const Router = require('express').Router;
 const router = Router()
 const getDatos = require ("../saveAndGet.js")
 
-let rutaCart = join (__dirname, "data", "cart.json")
+let rutaCart = join (__dirname, "..", "data", "cart.JSON")
 const cartManager = new CartManager(rutaCart)
 
 
 router.get("/", (req, res) => {
 
-    getDatos()
+    
     let carrito = cartManager.getCart()
 
     res.setHeader ("Content-Type", "application-JSON")

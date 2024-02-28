@@ -5,18 +5,18 @@ class ProductManager {
 
     constructor(ruta) {
         this.ruta = ruta
+        
     }
 
     getProducts() {
         return getDatos(this.ruta)
     }
 
-    getProductsById(req, res) {
-        let id = req.params.id
+    getProductsById(req, res, id) {
         let products = this.getProducts()
-
+    
         let index = products.findIndex(p => p.id === id)
-
+    
         if (index === -1) {
             res.status(404).send("No se encontró el producto con id " + id)
         } else {
@@ -42,6 +42,17 @@ class ProductManager {
 
         return nuevoCart
     }
+
+    updateProduct(id, updatedFields) {
+        const productIndex = this.products.findIndex((product) => product.id === id);
+        if (productIndex !== -1) {
+          this.products[productIndex] = { ...this.products[productIndex], ...updatedFields };
+          this.saveProductsToFile();
+          console.log("Producto actualizado");
+        } else {
+          console.log("Producto no encontrado");
+        }
+      }
 
 
     async deleteProduct(req, res) {

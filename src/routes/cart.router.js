@@ -2,22 +2,25 @@ const  CartManager  = require ("../Managers/CartManager.js")
 const { join } = require ("path")
 const Router = require('express').Router;
 const router = Router()
+const getDatos = require ("../saveAndGet.js")
 
-let rutaCart = join (__dirname, "..", "data", "cart.json")
+let rutaCart = join (__dirname, "data", "cart.json")
 const cartManager = new CartManager(rutaCart)
-
 
 
 router.get("/", (req, res) => {
 
-    let carrito = CartManager.getCart()
+    getDatos()
+    let carrito = cartManager.getCart()
 
     res.setHeader ("Content-Type", "application-JSON")
     res.status (200).json ({carrito})
 
+
+
 })
 
-router.post ("api/cart/:id", (req, res) => {
+router.post ("/:id", (req, res) => {
 
     let {id} = req.body
     if (!id) {
@@ -29,9 +32,6 @@ router.post ("api/cart/:id", (req, res) => {
 
     res.setHeader ("Content-Type", "application-JSON")
     res.status (201).json ({nuevoCart})
-
-
-
 
 
 }) 
